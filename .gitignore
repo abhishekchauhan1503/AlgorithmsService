@@ -1,0 +1,6 @@
+.idea
+target
+AlgorithmsService.iml
+maven-build.properties
+maven-build.xml
+.DS_Store

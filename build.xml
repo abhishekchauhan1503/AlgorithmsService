@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AlgorithmsService" default="build">
+
+
+    <property file="build.properties"/>
+    <property name="build.dir" value="target"></property>
+    <import file="maven-build.xml"/>
+
+    <target name="build-mvn-targets" depends="mvn_windows, mvn_unix">
+    </target>
+
+    <condition property="isWindows">
+        <os family="windows"/>
+    </condition>
+
+    <condition property="isUnix">
+        <os family="unix"/>
+    </condition>
+
+    <target name="mvn_windows" if="isWindows">
+        <exec dir="." executable="cmd">
+            <arg line="/c mvn ant:ant"/>
+        </exec>
+    </target>
+
+    <target name="mvn_unix" if="isUnix">
+        <exec dir="." executable="sh">
+            <arg line="-c 'mvn ant:ant'"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="clean, build-mvn-targets, package">
+        <echo message="Building &amp; Packaging"/>
+        <war destfile="${maven.build.dir}/AlgorithmsService.war"
+             compress="true"
+             webxml="src/main/webapp/WEB-INF/web.xml">
+            <lib dir="${maven.build.dir}/${maven.build.finalName}/WEB-INF/lib"/>
+            <classes dir="${maven.build.outputDir}"/>
+            <fileset dir="src/main/webapp"
+                     excludes="WEB-INF/web.xml"/>
+        </war>
+    </target>
+
+    <target name="clean" description="Clean the output directory">
+        <echo message="cleaning build dir"/>
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="deploy" description="deploy to tomcat" depends="build">
+        <echo>deploying from client</echo>
+        <exec dir="." executable="sh">
+            <arg line="-c './tomcat_deploy.sh'"/>
+        </exec>
+    </target>
+</project>
